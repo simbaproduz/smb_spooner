@@ -76,6 +76,793 @@ function _setText(el, val) {
 	if (el.textContent !== s) el.textContent = s;
 }
 
+var smbLocale = 'pt-BR';
+var smbSpawnFrozen = true;
+var smbLastHudData = null;
+var smbLastPropertiesData = null;
+var smbLocaleCaptured = false;
+var smbLocaleTextNodes = [];
+var smbLocalePlaceholderNodes = [];
+var smbLocaleTitleNodes = [];
+var smbLocaleHtmlDefaults = {};
+var SMB_LOCALE_HTML_SELECTORS = ['#basic-controls', '#entity-controls', '#help-content'];
+
+var SMB_I18N_TEXT_EN = {
+	'Spawn:': 'Spawn:',
+	'Velocidade:': 'Speed:',
+	'Ajuste do Mouse:': 'Mouse Adjust:',
+	'Rotacao:': 'Rotation:',
+	'Foco:': 'Focus:',
+	'Fixar no Chao:': 'Place On Ground:',
+	'Estado Fisico:': 'Physics State:',
+	'Camera:': 'Camera:',
+	'Direcao:': 'Heading:',
+	'Cursor:': 'Cursor:',
+	'⭐ Pessoal': '⭐ Personal',
+	'Objetos': 'Objects',
+	'Propsets': 'Propsets',
+	'Peds': 'Peds',
+	'Veiculos': 'Vehicles',
+	'Coletas': 'Pickups',
+	'Voltar': 'Back',
+	'Fechar': 'Close',
+	'Spawnar por Nome': 'Spawn By Name',
+	'Tudo:': 'All:',
+	'Rede:': 'Net:',
+	'Ped:': 'Ped:',
+	'Veh:': 'Veh:',
+	'Obj:': 'Obj:',
+	'Adicionar ao Banco': 'Add to Database',
+	'Excluir Tudo': 'Delete All',
+	'Adicionar': 'Add',
+	'Copiar': 'Copy',
+	'Colar': 'Paste',
+	'Handle:': 'Handle:',
+	'Soltar': 'Detach',
+	'Atacar': 'Attack',
+	'Dar Arma': 'Give Weapon',
+	'Estilo de Andar': 'Walk Style',
+	'Derrubar Props': 'Knock Off Props',
+	'Limpar': 'Clean',
+	'Ressuscitar': 'Resurrect',
+	'Colocar na Montaria': 'Set On Mount',
+	'Osso': 'Bone',
+	'Posicao': 'Position',
+	'Velocidade': 'Speed',
+	'Rotacao': 'Rotation',
+	'Manter posicao no mundo': 'Keep world position',
+	'Usar fixacao suave': 'Use soft pinning',
+	'Colisao': 'Collision',
+	'Vertice': 'Vertex',
+	'Rotacao fixa': 'Fixed rotation',
+	'Propriedades de': 'Properties of',
+	'Modelo': 'Model',
+	'Selecionar': 'Select',
+	'Foco': 'Focus',
+	'Congelar': 'Freeze',
+	'Descongelar': 'Unfreeze',
+	'Colocar Aqui': 'Place Here',
+	'Ir ao Marcador': 'Go To',
+	'Ir Ate': 'Go To',
+	'Resetar Rotacao': 'Reset Rotation',
+	'Vida': 'Health',
+	'Adicionar ao Grupo': 'Add to Group',
+	'Remover do Grupo': 'Remove from Group',
+	'Invencibilidade Ligada': 'Invincibility On',
+	'Invencibilidade Desligada': 'Invincibility Off',
+	'Visibilidade Ligada': 'Visible',
+	'Visibilidade Desligada': 'Invisible',
+	'Gravidade Ligada': 'Gravity On',
+	'Gravidade Desligada': 'Gravity Off',
+	'Colisao Ligada': 'Collision On',
+	'Colisao Desligada': 'Collision Off',
+	'Opcoes de Luz': 'Light Options',
+	'Opcoes de Anexo': 'Attachment Options',
+	'Solicitar Controle': 'Request Control',
+	'Registrar em Rede': 'Register As Networked',
+	'Opcoes do Ped': 'Ped Options',
+	'Opcoes do Veiculo': 'Vehicle Options',
+	'Limpar Tarefas': 'Clear Tasks',
+	'Limpar Tarefas Agora': 'Clear Tasks Now',
+	'Animacoes': 'Animations',
+	'Cenarios': 'Scenarios',
+	'Clonar': 'Clone',
+	'Clonar no Alvo': 'Clone to Target',
+	'Excluir': 'Delete',
+	'IA Ligada': 'AI On',
+	'IA Desligada': 'AI Off',
+	'Olhar para': 'Look At',
+	'Limpar Olhar': 'Clear Look At',
+	'Escala (local)': 'Scale (local)',
+	'Config Flags': 'Config Flags',
+	'Flags de Config': 'Config Flags',
+	'Remover do Banco': 'Remove from Database',
+	'Traje': 'Outfit',
+	'Trocar Modelo': 'Change Model',
+	'Reparar Veiculo': 'Repair Vehicle',
+	'Entrar no Veiculo': 'Enter Vehicle',
+	'Motor Ligado': 'Engine On',
+	'Motor Desligado': 'Engine Off',
+	'Luzes Ligadas': 'Lights On',
+	'Luzes Desligadas': 'Lights Off',
+	'Parar Cenario': 'Stop Scenario',
+	'Salvar Propset': 'Save Propset',
+	'Carregar relativo a posicao do cursor': 'Load relative to cursor position',
+	'Substituir banco atual': 'Replace current database',
+	'Salvar/Carregar exclusoes': 'Save/Load deletions',
+	'Salvar DB': 'Save DB',
+	'Importar/Exportar': 'Import/Export',
+	'Importar': 'Import',
+	'Exportar': 'Export',
+	'Intensidade (local)': 'Intensity (local)',
+	'Cor (local)': 'Color (local)',
+	'Tipo (local)': 'Type (local)',
+	'Parar Animacao': 'Stop Animation',
+	'Definir flag:': 'Set flag:',
+	'Spooner DB JSON': 'Spooner DB JSON',
+	'Map Editor XML': 'Map Editor XML',
+	'Ymap': 'Ymap',
+	'Backup do Spooner': 'Spooner Backup',
+	'propplacer JSON': 'propplacer JSON',
+	'Recentes': 'Recent',
+	'Sim': 'Yes',
+	'Nao': 'No',
+	'Maximo de Resultados da Busca (Total:': 'Max Search Results (Total:',
+	'Formato': 'Format',
+	'Descricao': 'Description',
+	'Exporta?': 'Export?',
+	'Importa?': 'Import?',
+	'Salvar/Carregar Banco': 'Save/Load Database',
+	'Banco': 'Database',
+	'Bancos Salvos': 'Saved Databases',
+	'Ajuda': 'Help',
+	'Ajuda do Object Spooner': 'Object Spooner Help',
+	'Adicionar marcador de ancora do propset': 'Add propset anchor marker'
+};
+
+var SMB_I18N_PLACEHOLDER_EN = {
+	'Buscar planta...': 'Search plant...',
+	'Buscar objeto...': 'Search object...',
+	'Buscar prop Oyate...': 'Search Oyate prop...',
+	'Buscar propset custom...': 'Search custom propset...',
+	'Buscar ped...': 'Search ped...',
+	'Filtrar por nome ou handle': 'Filter by name or handle',
+	'Caminho do arquivo (ex: C:/saves/mapa.json)': 'File path (e.g. C:/saves/mapa.json)',
+	'Nome do propset custom': 'Custom propset name',
+	'Nome do banco': 'Database name',
+	'Importar por URL': 'Import from URL'
+};
+
+var SMB_I18N_TITLE_EN = {
+	'Clique para alternar / Tecla 2': 'Click to toggle / Key 2',
+	'Expandir / Colapsar tudo': 'Expand / Collapse all',
+	'Alternar categorias': 'Toggle categories'
+};
+
+var SMB_I18N_DYNAMIC_LABELS_EN = {
+	'Tipis (spooni_tippi)': 'Tipis (spooni_tippi)',
+	'Decoracao Indigena / Sonhos': 'Indigenous Decor / Dreams',
+	'Cranios / Ossos / Macabro': 'Skulls / Bones / Macabre',
+	'Fogueiras / Tochas': 'Campfires / Torches',
+	'Acampamento / Mobilia': 'Camp / Furniture',
+	'Comida / Cozinha': 'Food / Kitchen',
+	'Madeira / Estrutura': 'Wood / Structure',
+	'Pelts / Caca': 'Pelts / Hunting',
+	'Agua / Utilidades': 'Water / Utilities',
+	'Armadilhas / Ferramentas': 'Traps / Tools',
+	'Vegetacao Extra': 'Extra Vegetation',
+	'Outros': 'Other',
+	'Acampamento': 'Camp',
+	'Cordas / Amarracao': 'Ropes / Lashings',
+	'Estabulo / Curral': 'Stable / Corral',
+	'Pontes / Escadas / Rampas': 'Bridges / Ladders / Ramps',
+	'Tendas / Abrigos': 'Tents / Shelters',
+	'Tochas / Lanternas / Luz': 'Torches / Lanterns / Light',
+	'Artesanato & Adornos': 'Craft & Adornments',
+	'Ceramica / Cestas / Gourds': 'Pottery / Baskets / Gourds',
+	'Trinkets / Colares / Joias': 'Trinkets / Necklaces / Jewelry',
+	'Caca & Pesca': 'Hunting & Fishing',
+	'Cranios / Chifres / Antlers': 'Skulls / Horns / Antlers',
+	'Pesca / Rio': 'Fishing / River',
+	'Taxidermia / Animais Montados': 'Taxidermy / Mounted Animals',
+	'Treino / Area de Combate': 'Training / Combat Area',
+	'Natureza': 'Nature',
+	'Arvores — Planices / New Austin': 'Trees — Plains / New Austin',
+	'Cultivos / Colheita': 'Crops / Harvest',
+	'Ervas / Plantas Medicinais': 'Herbs / Medicinal Plants',
+	'Ritual & Cultura': 'Ritual & Culture',
+	'Sacrificio / Tortura / Macabro': 'Sacrifice / Torture / Macabre',
+	'Mobilia / Descanso / Tecidos': 'Furniture / Rest / Textiles',
+	'Postes / Estrutura': 'Posts / Structure',
+	'Caixas / Barris / Carga / Entulho': 'Crates / Barrels / Cargo / Debris',
+	'Mesas / Ferramentas': 'Tables / Tools',
+	'Couros / Sacolas / Bolsas': 'Hides / Sacks / Bags',
+	'Caca / Flechas / Armadilhas': 'Hunting / Arrows / Traps',
+	'Carcacas / Peles': 'Carcasses / Pelts',
+	'Cozinha & Fogo': 'Cooking & Fire',
+	'Fogueiras / Lenha': 'Campfires / Firewood',
+	'Pedras / Rochas': 'Stones / Rocks',
+	'Cactos / Arbustos / Deserto': 'Cacti / Shrubs / Desert',
+	'Troncos / Vegetacao': 'Logs / Vegetation',
+	'Cerimonial / Ritual / Voodoo': 'Ceremonial / Ritual / Voodoo',
+	'Ossos / Fosseis / Macabro': 'Bones / Fossils / Macabre',
+	'Cozinha / Utensílios': 'Kitchen / Utensils',
+	'SIMBA': 'SIMBA',
+	'TIPIS & HUTS': 'TIPIS & HUTS',
+	'🐾 Animais': '🐾 Animals',
+	'Cavalos': 'Horses',
+	'Cachorros': 'Dogs',
+	'Aves': 'Birds',
+	'Predadores & Caça Grande': 'Predators & Large Game',
+	'Fauna Menor': 'Small Fauna',
+	'Répteis & Anfíbios': 'Reptiles & Amphibians',
+	'Peixes & Aquáticos': 'Fish & Aquatic',
+	'🪶 Nativos / Wapiti': '🪶 Natives / Wapiti',
+	'Personagens Nativos': 'Native Characters',
+	'🎭 Personagens': '🎭 Characters',
+	'Gang Van der Linde': 'Van der Linde Gang',
+	'Família Marston': 'Marston Family',
+	'Antagonistas': 'Antagonists',
+	'Gray & Braithwaite': 'Gray & Braithwaite',
+	'NPCs Nomeados': 'Named NPCs',
+	'🏘️ Civis': '🏘️ Civilians',
+	'💀 Gangs': '💀 Gangs',
+	'Dusters/O\'Driscolls': 'Dusters/O\'Driscolls',
+	'⚖️ Lei & Ordem': '⚖️ Law & Order',
+	'Lawmen Rurais': 'Rural Lawmen',
+	'Pinkertons & Guards': 'Pinkertons & Guards',
+	'🎲 Eventos Aleatórios': '🎲 Random Events',
+	'Eventos': 'Events',
+	'🌐 Multiplayer': '🌐 Multiplayer',
+	'Civis MP': 'MP Civilians',
+	'Gangs MP': 'MP Gangs',
+	'Bounty & Eventos MP': 'Bounty & MP Events',
+	'⚡ Únicos': '⚡ Unique',
+	'Únicos Masculinos': 'Unique Male',
+	'Únicos Femininos': 'Unique Female',
+	'Multiplayer Props': 'Multiplayer Props',
+	'🔫 Armas & Combate': '🔫 Weapons & Combat',
+	'Armas': 'Weapons',
+	'Munição & Explosivos': 'Ammo & Explosives',
+	'💀 Gore & Cadáveres': '💀 Gore & Corpses',
+	'Partes do Corpo': 'Body Parts',
+	'Ossos & Crânios': 'Bones & Skulls',
+	'Peles & Troféus de Caça': 'Pelts & Hunting Trophies',
+	'🌿 Natureza': '🌿 Nature',
+	'Árvores': 'Trees',
+	'Arbustos & Fetos': 'Shrubs & Ferns',
+	'Plantas & Ervas': 'Plants & Herbs',
+	'Rochas & Pedras': 'Rocks & Stones',
+	'Troncos & Madeira Morta': 'Logs & Deadwood',
+	'Grama & Chão Natural': 'Grass & Natural Ground',
+	'🏗️ Construção': '🏗️ Construction',
+	'Portas': 'Doors',
+	'Janelas': 'Windows',
+	'Cercas & Portões': 'Fences & Gates',
+	'Paredes & Estruturas': 'Walls & Structures',
+	'Trilhos & Varandas': 'Railings & Balconies',
+	'Telhados & Chaminés': 'Roofs & Chimneys',
+	'🏠 Mobília & Interior': '🏠 Furniture & Interior',
+	'Camas & Dormitório': 'Beds & Bedroom',
+	'Cadeiras, Bancos & Sofás': 'Chairs, Benches & Sofas',
+	'Mesas': 'Tables',
+	'Armários, Prateleiras & Gavetas': 'Cabinets, Shelves & Drawers',
+	'Baús & Cofres': 'Chests & Safes',
+	'Decoração & Quadros': 'Decor & Paintings',
+	'🍳 Cozinha & Alimentos': '🍳 Cooking & Food',
+	'Utensílios de Cozinha': 'Kitchen Utensils',
+	'Louça & Talheres': 'Dishes & Cutlery',
+	'Garrafas & Jarros': 'Bottles & Jugs',
+	'Alimentos': 'Food',
+	'🔥 Acampamento & Fogo': '🔥 Camp & Fire',
+	'Fogueiras': 'Campfires',
+	'Equipamento de Acampamento': 'Camping Equipment',
+	'💡 Iluminação': '💡 Lighting',
+	'Lanternas & Lampiões': 'Lanterns & Lamps',
+	'Velas & Tochas': 'Candles & Torches',
+	'📦 Contêineres & Carga': '📦 Containers & Cargo',
+	'Barris': 'Barrels',
+	'Caixas & Engradados': 'Crates & Boxes',
+	'Sacos & Pacotes': 'Sacks & Packages',
+	'Baús & Caixas de Dinheiro': 'Chests & Cash Boxes',
+	'🔨 Ferramentas & Trabalho': '🔨 Tools & Work',
+	'Ferramentas': 'Tools',
+	'Fazenda & Ranch': 'Farm & Ranch',
+	'Mineiro & Indústria': 'Mining & Industry',
+	'Médico': 'Medical',
+	'Lei & Punição': 'Law & Punishment',
+	'🚗 Transporte': '🚗 Transport',
+	'Carroças & Vagões': 'Wagons & Carts',
+	'Trens & Trilhos': 'Trains & Tracks',
+	'Barcos & Docas': 'Boats & Docks',
+	'🎲 Jogos & Cassino': '🎲 Games & Casino',
+	'Fichas & Dominó': 'Chips & Dominoes',
+	'Cartas & Mesas de Jogo': 'Cards & Gaming Tables',
+	'⛪ Religião & Morte': '⛪ Religion & Death',
+	'Lápides & Cemitério': 'Tombstones & Cemetery',
+	'Cruz, Sino & Igreja': 'Cross, Bell & Church',
+	'Bruxaria & Ritual': 'Witchcraft & Ritual',
+	'🪶 Nativo': '🪶 Native',
+	'Decoração Nativa': 'Native Decor',
+	'Armas Nativas': 'Native Weapons',
+	'🏙️ Decoração & Sinalização': '🏙️ Decor & Signage',
+	'Placas & Sinais': 'Signs & Signage',
+	'Estátuas & Monumentos': 'Statues & Monuments',
+	'Props de Cidade': 'City Props',
+	'Torres & Poços d\'Água': 'Towers & Water Wells',
+	'🎭 Props de Cena': '🎭 Scene Props',
+	'Cutscene': 'Cutscene',
+	'Grupos & Script': 'Groups & Script',
+	'Veículos de Cena': 'Scene Vehicles',
+	'🧵 Têxteis & Vestuário': '🧵 Textiles & Clothing',
+	'Roupas & Chapéus': 'Clothes & Hats',
+	'Tapetes & Cortinas': 'Rugs & Curtains',
+	'Malas & Bolsas': 'Suitcases & Bags',
+	'🎲 Outros': '🎲 Other',
+	'Props Diversos': 'Misc Props'
+};
+
+var SMB_I18N_HTML_EN = {
+	'#basic-controls': `
+		<div class="control-and-help">
+			<div class="control">WASD</div>
+			<div class="control-help">Move</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">wg</div>
+			<div class="control-help">Up/Down</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">E</div>
+			<div class="control-help">Spawn</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">F</div>
+			<div class="control-help">Spawn Menu</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">↑↓</div>
+			<div class="control-help">Cycle preview</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">X</div>
+			<div class="control-help">Database</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">J</div>
+			<div class="control-help">Saved DBs</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">vu</div>
+			<div>Speed +/-</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">R</div>
+			<div class="control-help">Select Speed</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">c</div>
+			<div class="control-help">Focus Mode</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">M</div>
+			<div class="control-help">Entity Handles</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">H</div>
+			<div class="control-help">Help</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">k</div>
+			<div class="control-help">Exit</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">1</div>
+			<div class="control-help">Hide Controls</div>
+		</div>
+	`,
+	'#entity-controls': `
+		<div class="control-and-help">
+			<div>[LMB]</div>
+			<div class="control-help">Select</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">QZ</div>
+			<div class="arrow-keys">
+				<div>q</div>
+				<div>r</div>
+				<div>s</div>
+				<div>t</div>
+			</div>
+			<div class="control-help">Adjust</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">78I</div>
+			<div class="control-help">Mouse Mode</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">U</div>
+			<div class="control-help">Ground</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">CV</div>
+			<div class="control-help">Rotate</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">B</div>
+			<div class="control-help">Axis</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">e</div>
+			<div class="control-help">Properties</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">G</div>
+			<div class="control-help">Clone</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">b</div>
+			<div class="control-help">Focus</div>
+		</div>
+		<div class="control-and-help">
+			<div class="control">c</div>
+			<div class="control-help">Focus Mode</div>
+		</div>
+		<div class="control-and-help">
+			<div>[RMB]</div>
+			<div class="control-help">Delete</div>
+		</div>
+	`,
+	'#help-content': `
+		<h2>Cursor colors</h2>
+		<table>
+			<tr><td style="color: #fff">+</td><td>No entity selected</td></tr>
+			<tr><td style="color: #0f0">+</td><td>Highlighted entity</td></tr>
+			<tr><td style="color: #0ff">+</td><td>Attached entity</td></tr>
+		</table>
+		<h2>Controls</h2>
+		<table>
+			<tr><td class="control">WASD</td><td><strong>Move</strong></td></tr>
+			<tr><td class="control">wg</td><td><strong>Up</strong>/<strong>Down</strong></td></tr>
+			<tr><td class="control">E</td><td><strong>Spawn</strong> the entity at the cursor position</td></tr>
+			<tr><td>Left Click</td><td><ul><li>Highlighted entity: <strong>Attach</strong> to cursor</li><li>Entity attached to cursor: <strong>Detach</strong> from cursor</li></ul></td></tr>
+			<tr><td>Right Click</td><td><strong>Delete</strong> selected entity</td></tr>
+			<tr><td class="control">CV</td><td><strong>Rotate</strong></td></tr>
+			<tr><td class="control">B</td><td>Change rotation axis</td></tr>
+			<tr><td class="control">QZqrst</td><td>Adjust selected entity position</td></tr>
+			<tr><td class="control">I</td><td>Cycle mouse adjustment mode<ul><li><strong>X</strong>: Move attached entity on X axis</li><li><strong>Y</strong>: Move attached entity on Y axis</li><li><strong>Z</strong>: Move attached entity on Z axis</li><li><strong>Rotation</strong>: Rotate entity</li></ul></td></tr>
+			<tr><td class="control">U</td><td>Toggle whether entities stick to the ground in controlled adjustment modes</td></tr>
+			<tr><td class="control">7</td><td>Turn off mouse adjustment and move the entity only with C/V/Q/Z/Arrows</td></tr>
+			<tr><td class="control">8</td><td>Return to <strong>Free</strong> mouse adjustment mode</td></tr>
+			<tr><td class="control">G</td><td><strong>Clone</strong> selected entity</td></tr>
+			<tr><td class="control">b</td><td><strong>Focus</strong> on the selected entity, attaching the spooner camera to it</td></tr>
+			<tr><td class="control">c</td><td>Toggle <strong>Focus Mode</strong><ul><li><strong>Fixed</strong>: camera rotates around the focused entity</li><li><strong>Free</strong>: camera can rotate freely</li></ul></td></tr>
+			<tr><td class="control">M</td><td>Toggle <strong>entity handles</strong></td></tr>
+			<tr><td><span class="control">vu</span> Mouse wheel</td><td>Increase/Decrease the selected <strong>speed</strong></td></tr>
+			<tr><td class="control">R</td><td>Cycle which speed to change</td></tr>
+			<tr><td class="control">F</td><td>Open the <strong>Spawn</strong> menu</td></tr>
+			<tr><td class="control">X</td><td>Open the <strong>Database</strong> menu</td></tr>
+			<tr><td class="control">e</td><td>Open the selected entity <strong>Properties</strong> menu</td></tr>
+			<tr><td class="control">J</td><td>Open the <strong>Save/Load Database</strong> menu</td></tr>
+			<tr><td class="control">k</td><td><strong>Exit</strong> Object Spooner</td></tr>
+		</table>
+		<h2>Menus</h2>
+		<h3>Spawn Menu - <span class="control">F</span></h3>
+		<p>The <strong>Spawn</strong> menu provides searchable lists to choose an entity to spawn. Left-clicking an entity sets it as the current spawn.</p>
+		<p>Clicking an item in <strong>Peds</strong>, <strong>Vehicles</strong>, <strong>Objects</strong> or any <strong>Personal</strong> submenu closes the menu and starts a <strong>local preview</strong>. While preview is active, use <strong>↑</strong> and <strong>↓</strong> to navigate the current list and <strong>E</strong> to spawn the shown item.</p>
+		<p>If an entity is not in the list, you can still spawn it by typing the full model name in the search field and clicking <strong>Spawn By Name</strong>.</p>
+		<p>Right-clicking an entity in any spawn menu adds it to favorites. Clicking the favorite button <i class="fas fa-star"></i> toggles the view to show only favorite entities.</p>
+		<h3>Database Menu - <span class="control">X</span></h3>
+		<p>The <strong>Database</strong> menu stores a list of entities. When an entity is spawned, it is automatically added to the current database. Existing entities can be added or removed through the <strong>Properties</strong> menu.</p>
+		<ul>
+			<li>Left-click an entity to open it in <strong>Properties</strong></li>
+			<li>Right-click an entity to delete it</li>
+			<li>Click <strong>Delete All</strong> to delete all entities from the database</li>
+		</ul>
+		<h3>Properties Menu - <span class="control">e</span></h3>
+		<p>The <strong>Properties</strong> menu lists and allows editing the properties of an entity.</p>
+		<p>Properties marked as (local) are not network-synced, so changes to them are only visible to you.</p>
+		<h3>Save/Load Database Menu - <span class="control">J</span></h3>
+		<p>The <strong>Save/Load Database</strong> menu lets you save the current database with a name and load all entities again later.</p>
+		<ul>
+			<li>To save the current database, type a name and click <strong>Save</strong>.</li>
+			<li>To load a saved database, left-click the database name.</li>
+			<li>To delete a saved database, right-click the database name.</li>
+			<li>To import or export the current database, click <strong>Import/Export</strong>.</li>
+		</ul>
+		<p>Checking <strong>Load relative to cursor position</strong> spawns the database relative to the current cursor position instead of the original placement.</p>
+		<p>Checking <strong>Replace current database</strong> replaces the current database instead of merging both.</p>
+		<p>Checking <strong>Save/Load deletions</strong> stores deleted entities and deletes them again when the database is loaded.</p>
+		<h3>Import/Export Menu</h3>
+		<p>The <strong>Import/Export</strong> menu lets you import and export databases in different formats:</p>
+		<table>
+			<tr><th>Format</th><th>Description</th><th>Export?</th><th>Import?</th></tr>
+			<tr><td>Spooner DB JSON</td><td>Native format used by spooner</td><td>Yes</td><td>Yes</td></tr>
+			<tr><td>Map Editor XML</td><td>XML format used by Lambdarevolution Map Editor and the objectloader resource</td><td>Yes</td><td>No</td></tr>
+			<tr><td>Ymap</td><td>Native map format used by GTA V/RDR2</td><td>Yes</td><td>Yes</td></tr>
+			<tr><td>propplacer JSON</td><td>JSON database used by RedEM:RP propplacer</td><td>Yes</td><td>No</td></tr>
+			<tr><td>Spooner Backup</td><td>Backup of all spooner databases</td><td>Yes</td><td>Yes</td></tr>
+		</table>
+		<p>To export, select the format and click <strong>Export</strong>. The output appears in the text area so you can copy and save it.</p>
+		<p>To import, paste content into the text area, select the correct format and click <strong>Import</strong>. Imported objects are added to the current database.</p>
+		<p>Entering the URL of a JSON/XML file in <strong>Import from URL</strong> and clicking <strong>Import</strong> lets you import from web sources such as pastebin.com. Make sure the URL points to the raw file.</p>
+	`
+};
+
+var SMB_RUNTIME_LOCALES = {
+	'pt-BR': {
+		adjustModes: ['X', 'Y', 'Z', 'Rotacao', 'Livre', 'Desligado'],
+		rotateModes: ['Pitch', 'Roll', 'Yaw'],
+		entityTypes: { 1: 'Ped', 2: 'Veiculo', 3: 'Objeto' },
+		entityTypeDefault: 'Entidade',
+		entityTypeNames: { 1: 'ped', 2: 'veiculo', 3: 'objeto', 4: 'propset', 5: 'coleta', default: 'entidade' },
+		entityInvalidPrefix: '(Invalido)',
+		placeOnGroundOn: 'Ligado',
+		placeOnGroundOff: 'Desligado',
+		focusFree: 'Livre',
+		focusFixed: 'Fixo',
+		autosaveOnPrefix: 'Auto-save: ON · ',
+		autosaveOff: 'Auto-save: OFF',
+		spawnFrozenOn: '\u2744 Congelado',
+		spawnFrozenOff: '\uD83C\uDF2C Descongelado',
+		dbSortRecent: 'Recentes',
+		dbSortName: 'Nome',
+		back: 'Voltar',
+		propsetError: {
+			custom_propset_name_required: 'Defina um nome antes de salvar o propset',
+			custom_propset_internal: 'Erro interno ao montar o propset',
+			custom_propset_build_failed: 'Nao foi possivel montar o propset',
+			custom_propset_no_eligible: 'Nenhum objeto elegivel encontrado na database atual',
+			custom_propset_no_eligible_with_skipped: 'Nenhum objeto elegivel encontrado na database atual. {count} item(ns) foram ignorados por dados invalidos.',
+			custom_propset_invalid_name_or_content: 'Nome ou conteudo invalido',
+			custom_propset_invalid_or_empty: 'Propset custom vazio ou invalido'
+		}
+	},
+	'en-US': {
+		adjustModes: ['X', 'Y', 'Z', 'Rotation', 'Free', 'Off'],
+		rotateModes: ['Pitch', 'Roll', 'Yaw'],
+		entityTypes: { 1: 'Ped', 2: 'Vehicle', 3: 'Object' },
+		entityTypeDefault: 'Entity',
+		entityTypeNames: { 1: 'ped', 2: 'vehicle', 3: 'object', 4: 'propset', 5: 'pickup', default: 'entity' },
+		entityInvalidPrefix: '(Invalid)',
+		placeOnGroundOn: 'On',
+		placeOnGroundOff: 'Off',
+		focusFree: 'Free',
+		focusFixed: 'Fixed',
+		autosaveOnPrefix: 'Auto-save: ON · ',
+		autosaveOff: 'Auto-save: OFF',
+		spawnFrozenOn: '\u2744 Frozen',
+		spawnFrozenOff: '\uD83C\uDF2C Unfrozen',
+		dbSortRecent: 'Recent',
+		dbSortName: 'Name',
+		back: 'Back',
+		propsetError: {
+			custom_propset_name_required: 'Define a name before saving the propset',
+			custom_propset_internal: 'Internal error while building the custom propset',
+			custom_propset_build_failed: 'Could not build the custom propset',
+			custom_propset_no_eligible: 'No eligible objects were found in the current database',
+			custom_propset_no_eligible_with_skipped: 'No eligible objects were found in the current database. {count} item(s) were ignored because of invalid data.',
+			custom_propset_invalid_name_or_content: 'Invalid name or content',
+			custom_propset_invalid_or_empty: 'Custom propset is empty or invalid'
+		}
+	}
+};
+
+function smb_SanitizeLocale(locale) {
+	if (typeof locale !== 'string') return 'pt-BR';
+	var normalized = locale.replace('_', '-').toLowerCase();
+	if (normalized === 'pt' || normalized === 'pt-br' || normalized === 'ptbr') return 'pt-BR';
+	if (normalized === 'en' || normalized === 'en-us' || normalized === 'enus') return 'en-US';
+	return 'pt-BR';
+}
+
+function smb_t(key, params) {
+	var locale = SMB_RUNTIME_LOCALES[smbLocale] || SMB_RUNTIME_LOCALES['pt-BR'];
+	var text = locale[key];
+	if (text == null && SMB_RUNTIME_LOCALES['pt-BR']) {
+		text = SMB_RUNTIME_LOCALES['pt-BR'][key];
+	}
+	if (text == null) {
+		text = key;
+	}
+	if (params) {
+		Object.keys(params).forEach(function(paramKey) {
+			text = String(text).replaceAll('{' + paramKey + '}', String(params[paramKey]));
+		});
+	}
+	return text;
+}
+
+function smb_GetSortLocale() {
+	return smbLocale === 'en-US' ? 'en' : 'pt';
+}
+
+function smb_LocalizeDynamicLabel(label) {
+	if (smbLocale !== 'en-US') return label;
+	return SMB_I18N_DYNAMIC_LABELS_EN[label] || label;
+}
+
+function smb_FormatDynamicGroupLabel(label, count) {
+	return '<span>' + smb_LocalizeDynamicLabel(label) + ' (' + count + ')</span><span class="oyate-toggle">▶</span>';
+}
+
+function smb_CaptureLocaleDefaults() {
+	if (smbLocaleCaptured) return;
+	smbLocaleCaptured = true;
+
+	SMB_LOCALE_HTML_SELECTORS.forEach(function(selector) {
+		var el = document.querySelector(selector);
+		if (el) {
+			smbLocaleHtmlDefaults[selector] = el.innerHTML;
+		}
+	});
+
+	var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+		acceptNode: function(node) {
+			if (!node || !node.nodeValue || !node.nodeValue.trim()) {
+				return NodeFilter.FILTER_REJECT;
+			}
+			if (!node.parentElement) {
+				return NodeFilter.FILTER_REJECT;
+			}
+			if (node.parentElement.closest('#help-content') || node.parentElement.closest('#basic-controls') || node.parentElement.closest('#entity-controls')) {
+				return NodeFilter.FILTER_REJECT;
+			}
+			if (node.parentElement.tagName === 'SCRIPT' || node.parentElement.tagName === 'STYLE' || node.parentElement.tagName === 'TEXTAREA') {
+				return NodeFilter.FILTER_REJECT;
+			}
+			return NodeFilter.FILTER_ACCEPT;
+		}
+	});
+
+	var currentNode = walker.nextNode();
+	while (currentNode) {
+		smbLocaleTextNodes.push({
+			node: currentNode,
+			original: currentNode.nodeValue
+		});
+		currentNode = walker.nextNode();
+	}
+
+	document.querySelectorAll('[placeholder]').forEach(function(el) {
+		smbLocalePlaceholderNodes.push({
+			element: el,
+			original: el.getAttribute('placeholder')
+		});
+	});
+
+	document.querySelectorAll('[title]').forEach(function(el) {
+		smbLocaleTitleNodes.push({
+			element: el,
+			original: el.getAttribute('title')
+		});
+	});
+}
+
+function smb_TranslateExactValue(original, localeMap) {
+	if (!original || !localeMap) return original;
+	var match = original.match(/^(\s*)([\s\S]*?)(\s*)$/);
+	if (!match) return original;
+	var prefix = match[1];
+	var core = match[2];
+	var suffix = match[3];
+	if (!Object.prototype.hasOwnProperty.call(localeMap, core)) {
+		return original;
+	}
+	return prefix + localeMap[core] + suffix;
+}
+
+function smb_ApplyStaticLocale() {
+	smb_CaptureLocaleDefaults();
+
+	SMB_LOCALE_HTML_SELECTORS.forEach(function(selector) {
+		var el = document.querySelector(selector);
+		if (!el) return;
+		if (smbLocale === 'en-US' && SMB_I18N_HTML_EN[selector]) {
+			el.innerHTML = SMB_I18N_HTML_EN[selector];
+		} else if (smbLocaleHtmlDefaults[selector] != null) {
+			el.innerHTML = smbLocaleHtmlDefaults[selector];
+		}
+	});
+
+	var textMap = smbLocale === 'en-US' ? SMB_I18N_TEXT_EN : null;
+	smbLocaleTextNodes.forEach(function(entry) {
+		entry.node.nodeValue = textMap ? smb_TranslateExactValue(entry.original, textMap) : entry.original;
+	});
+
+	var placeholderMap = smbLocale === 'en-US' ? SMB_I18N_PLACEHOLDER_EN : null;
+	smbLocalePlaceholderNodes.forEach(function(entry) {
+		entry.element.setAttribute('placeholder', placeholderMap && Object.prototype.hasOwnProperty.call(placeholderMap, entry.original)
+			? placeholderMap[entry.original]
+			: entry.original);
+	});
+
+	var titleMap = smbLocale === 'en-US' ? SMB_I18N_TITLE_EN : null;
+	smbLocaleTitleNodes.forEach(function(entry) {
+		entry.element.setAttribute('title', titleMap && Object.prototype.hasOwnProperty.call(titleMap, entry.original)
+			? titleMap[entry.original]
+			: entry.original);
+	});
+}
+
+function smb_RefreshLocaleButtons() {
+	var ptBtn = document.getElementById('locale-ptbr-btn');
+	var enBtn = document.getElementById('locale-enus-btn');
+	if (ptBtn) ptBtn.classList.toggle('active', smbLocale === 'pt-BR');
+	if (enBtn) enBtn.classList.toggle('active', smbLocale === 'en-US');
+}
+
+function smb_RefreshAutoSaveButton() {
+	var btn = document.querySelector('#autosave-toggle');
+	if (!btn) return;
+	if (autoSaveEnabled) {
+		if (!btn.classList.contains('on')) btn.classList.add('on');
+		if (!btn.textContent.startsWith(smb_t('autosaveOnPrefix'))) {
+			var now = new Date();
+			var hh = now.getHours().toString().padStart(2, '0');
+			var mm = now.getMinutes().toString().padStart(2, '0');
+			btn.textContent = smb_t('autosaveOnPrefix') + hh + ':' + mm;
+		}
+	} else {
+		btn.classList.remove('on');
+		btn.textContent = smb_t('autosaveOff');
+	}
+}
+
+function smb_RefreshSpawnFrozenLabel() {
+	var frozenEl = document.getElementById('spawn-frozen-state');
+	if (!frozenEl) return;
+	if (smbSpawnFrozen) {
+		frozenEl.textContent = smb_t('spawnFrozenOn');
+		frozenEl.style.color = '';
+	} else {
+		frozenEl.textContent = smb_t('spawnFrozenOff');
+		frozenEl.style.color = '#7dffb3';
+	}
+}
+
+function smb_RefreshDatabaseSortLabel() {
+	var btn = document.getElementById('object-database-sort-recent');
+	if (!btn) return;
+	btn.innerHTML = databaseRecentFirst ? smb_t('dbSortRecent') : smb_t('dbSortName');
+}
+
+function smb_RefreshEntitySelectLabels() {
+	document.querySelectorAll('#entity-select-menu > button').forEach(function(btn) {
+		btn.innerHTML = smb_t('back');
+	});
+}
+
+function smb_ApplyLocale(locale) {
+	smbLocale = smb_SanitizeLocale(locale);
+	document.documentElement.lang = smbLocale;
+	smb_ApplyStaticLocale();
+	smb_RefreshLocaleButtons();
+	smb_RefreshDatabaseSortLabel();
+	smb_RefreshSpawnFrozenLabel();
+	smb_RefreshAutoSaveButton();
+	smb_RefreshEntitySelectLabels();
+	if (smbLastPropertiesData) {
+		updatePropertiesMenu(smbLastPropertiesData);
+	}
+	if (smbLastHudData) {
+		updateSpoonerHud(smbLastHudData);
+	}
+}
+
+function smb_GetPropsetErrorText(code, args) {
+	var locale = SMB_RUNTIME_LOCALES[smbLocale] || SMB_RUNTIME_LOCALES['pt-BR'];
+	var text = (locale.propsetError && locale.propsetError[code]) ||
+		(SMB_RUNTIME_LOCALES['pt-BR'].propsetError && SMB_RUNTIME_LOCALES['pt-BR'].propsetError[code]) ||
+		code;
+	if (args) {
+		Object.keys(args).forEach(function(key) {
+			text = String(text).replaceAll('{' + key + '}', String(args[key]));
+		});
+	}
+	return text;
+}
+
 var personal = [
 	// arvores
 	"p_sap_fir_aa_sim",
@@ -3817,6 +4604,7 @@ function hideSpoonerHud() {
 }
 
 function updateSpoonerHud(data) {
+	smbLastHudData = data;
 	var e = _getEls();
 
 	// Crosshair
@@ -3894,17 +4682,17 @@ function updateSpoonerHud(data) {
 	_setText(e.speed, speedText);
 
 	// Adjust mode
-	var adjustModes = ['X', 'Y', 'Z', 'Rotacao', 'Livre', 'Desligado'];
+	var adjustModes = smb_t('adjustModes');
 	_setText(e.adjustMode, adjustModes[data.adjustMode] || '');
 
 	// Rotate mode
-	var rotateModes = ['Pitch', 'Roll', 'Yaw'];
+	var rotateModes = smb_t('rotateModes');
 	_setText(e.rotateMode, rotateModes[data.rotateMode] || '');
 
 	// Place on ground
 	var plgDisplay = data.adjustMode === 4 ? 'none' : 'block';
 	if (e.placeOnGroundCont.style.display !== plgDisplay) e.placeOnGroundCont.style.display = plgDisplay;
-	_setText(e.placeOnGround, data.placeOnGround ? 'Ligado' : 'Desligado');
+	_setText(e.placeOnGround, data.placeOnGround ? smb_t('placeOnGroundOn') : smb_t('placeOnGroundOff'));
 
 	// Camera / cursor coords
 	_setText(e.camX, data.camX);
@@ -3928,13 +4716,13 @@ function updateSpoonerHud(data) {
 
 	// Entity type / model
 	_setText(e.modelName, data.modelName);
-	var entityTypes = { 1: 'Ped', 2: 'Veiculo', 3: 'Objeto' };
-	_setText(e.entityType, entityTypes[data.entityType] || 'Entidade');
+	var entityTypes = smb_t('entityTypes');
+	_setText(e.entityType, entityTypes[data.entityType] || smb_t('entityTypeDefault'));
 
 	// Focus
 	if (data.focusTarget) {
 		_setText(e.focusTarget, data.focusTarget.toString());
-		_setText(e.focusMode, data.freeFocus ? 'Livre' : 'Fixo');
+		_setText(e.focusMode, data.freeFocus ? smb_t('focusFree') : smb_t('focusFixed'));
 		if (e.focusInfo.style.display !== 'block') e.focusInfo.style.display = 'block';
 	} else {
 		if (e.focusInfo.style.display !== 'none') e.focusInfo.style.display = 'none';
@@ -4307,7 +5095,7 @@ function populatePersonalObjetosList(filter) {
 
 		var header = document.createElement('div');
 		header.className = 'oyate-category-header' + (hasFilter || favsOnly ? ' open' : '');
-		header.innerHTML = '<span>' + group.category + ' (' + matches.length + ')</span><span class="oyate-toggle">▶</span>';
+		header.innerHTML = smb_FormatDynamicGroupLabel(group.category, matches.length);
 
 		var itemsContainer = document.createElement('div');
 		itemsContainer.className = 'oyate-category-items' + (hasFilter || favsOnly ? ' open' : '');
@@ -4426,7 +5214,9 @@ function populatePersonalOyateList(filter) {
 		masterMap[m].push(group);
 	});
 
-	masterOrder.sort(function(a, b) { return a.localeCompare(b, 'pt'); });
+	masterOrder.sort(function(a, b) {
+		return smb_LocalizeDynamicLabel(a).localeCompare(smb_LocalizeDynamicLabel(b), smb_GetSortLocale());
+	});
 
 	masterOrder.forEach(function(masterName) {
 		var groups = masterMap[masterName];
@@ -4436,7 +5226,7 @@ function populatePersonalOyateList(filter) {
 		masterItemsEl.className = 'oyate-master-items' + (hasFilter ? ' open' : '');
 
 		var sortedGroups = groups.slice().sort(function(a, b) {
-			return a.category.localeCompare(b.category, 'pt');
+			return smb_LocalizeDynamicLabel(a.category).localeCompare(smb_LocalizeDynamicLabel(b.category), smb_GetSortLocale());
 		});
 
 		sortedGroups.forEach(function(group) {
@@ -4458,7 +5248,7 @@ function populatePersonalOyateList(filter) {
 				var search = filter.toLowerCase();
 				return label.includes(search) || model.includes(search);
 			}).slice().sort(function(a, b) {
-				return a.label.localeCompare(b.label, 'pt');
+				return a.label.localeCompare(b.label, smb_GetSortLocale());
 			});
 			if (matches.length === 0) return;
 
@@ -4466,7 +5256,7 @@ function populatePersonalOyateList(filter) {
 
 			var header = document.createElement('div');
 			header.className = 'oyate-category-header' + (hasFilter || favsOnly ? ' open' : '');
-			header.innerHTML = '<span>' + group.category + ' (' + matches.length + ')</span><span class="oyate-toggle">▶</span>';
+			header.innerHTML = smb_FormatDynamicGroupLabel(group.category, matches.length);
 
 			var itemsContainer = document.createElement('div');
 			itemsContainer.className = 'oyate-category-items' + (hasFilter || favsOnly ? ' open' : '');
@@ -4514,7 +5304,7 @@ function populatePersonalOyateList(filter) {
 
 		var masterHeader = document.createElement('div');
 		masterHeader.className = 'oyate-master-header' + (hasFilter ? ' open' : '');
-		masterHeader.innerHTML = '<span>' + masterName + ' (' + masterTotal + ')</span><span class="oyate-toggle">▶</span>';
+		masterHeader.innerHTML = smb_FormatDynamicGroupLabel(masterName, masterTotal);
 
 		masterHeader.addEventListener('click', function() {
 			var isOpen = masterItemsEl.classList.contains('open');
@@ -4624,7 +5414,9 @@ function populatePersonalPedsList(filter) {
 		masterMap[m].push(group);
 	});
 
-	masterOrder.sort(function(a, b) { return a.localeCompare(b, 'pt'); });
+	masterOrder.sort(function(a, b) {
+		return smb_LocalizeDynamicLabel(a).localeCompare(smb_LocalizeDynamicLabel(b), smb_GetSortLocale());
+	});
 
 	masterOrder.forEach(function(masterName) {
 		var groups = masterMap[masterName];
@@ -4634,7 +5426,7 @@ function populatePersonalPedsList(filter) {
 		masterItemsEl.className = 'oyate-master-items' + (hasFilter ? ' open' : '');
 
 		var sortedGroups = groups.slice().sort(function(a, b) {
-			return a.category.localeCompare(b.category, 'pt');
+			return smb_LocalizeDynamicLabel(a.category).localeCompare(smb_LocalizeDynamicLabel(b.category), smb_GetSortLocale());
 		});
 
 		sortedGroups.forEach(function(group) {
@@ -4656,7 +5448,7 @@ function populatePersonalPedsList(filter) {
 				var search = filter.toLowerCase();
 				return label.includes(search) || model.includes(search);
 			}).slice().sort(function(a, b) {
-				return a.label.localeCompare(b.label, 'pt');
+				return a.label.localeCompare(b.label, smb_GetSortLocale());
 			});
 			if (matches.length === 0) return;
 
@@ -4664,7 +5456,7 @@ function populatePersonalPedsList(filter) {
 
 			var header = document.createElement('div');
 			header.className = 'oyate-category-header' + (hasFilter || favsOnly ? ' open' : '');
-			header.innerHTML = '<span>' + group.category + ' (' + matches.length + ')</span><span class="oyate-toggle">▶</span>';
+			header.innerHTML = smb_FormatDynamicGroupLabel(group.category, matches.length);
 
 			var itemsContainer = document.createElement('div');
 			itemsContainer.className = 'oyate-category-items' + (hasFilter || favsOnly ? ' open' : '');
@@ -4712,7 +5504,7 @@ function populatePersonalPedsList(filter) {
 
 		var masterHeader = document.createElement('div');
 		masterHeader.className = 'oyate-master-header' + (hasFilter ? ' open' : '');
-		masterHeader.innerHTML = '<span>' + masterName + ' (' + masterTotal + ')</span><span class="oyate-toggle">▶</span>';
+		masterHeader.innerHTML = smb_FormatDynamicGroupLabel(masterName, masterTotal);
 
 		masterHeader.addEventListener('click', function() {
 			var isOpen = masterItemsEl.classList.contains('open');
@@ -5350,7 +6142,7 @@ function populateObjectListCategorized(filter) {
 
 			var header = document.createElement('div');
 			header.className = 'oyate-category-header' + (hasFilter ? ' open' : '');
-			header.innerHTML = '<span>' + group.category + ' (' + group.items.length + ')</span><span class="oyate-toggle">▶</span>';
+			header.innerHTML = smb_FormatDynamicGroupLabel(group.category, group.items.length);
 
 			var itemsContainer = document.createElement('div');
 			itemsContainer.className = 'oyate-category-items' + (hasFilter ? ' open' : '');
@@ -5390,7 +6182,7 @@ function populateObjectListCategorized(filter) {
 
 		var masterHeader = document.createElement('div');
 		masterHeader.className = 'oyate-master-header' + (hasFilter ? ' open' : '');
-		masterHeader.innerHTML = '<span>' + masterName + ' (' + masterTotal + ')</span><span class="oyate-toggle">▶</span>';
+		masterHeader.innerHTML = smb_FormatDynamicGroupLabel(masterName, masterTotal);
 
 		masterHeader.addEventListener('click', function() {
 			var isOpen = masterItemsEl.classList.contains('open');
@@ -5754,7 +6546,7 @@ function entityDisplayName(entity, props) {
 			return `${entity.toString()} ${props.name}`
 		}
 	} else {
-		return `(Invalid) ${entity.toString()} ${props.name}`
+		return `${smb_t('entityInvalidPrefix')} ${entity.toString()} ${props.name}`
 	}
 }
 
@@ -5867,6 +6659,7 @@ function setFieldIfInactive(id, value) {
 }
 
 function updatePropertiesMenu(data) {
+	smbLastPropertiesData = data;
 	var properties = JSON.parse(data.properties);
 
 	document.querySelectorAll('.player-property').forEach(e => e.style.display = 'none');
@@ -5876,25 +6669,25 @@ function updatePropertiesMenu(data) {
 
 	switch (properties.type) {
 		case 1:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'ped';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames')[1];
 			document.querySelectorAll('.ped-property').forEach(e => e.style.display = 'block');
 			break;
 		case 2:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'veiculo';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames')[2];
 			document.querySelectorAll('.vehicle-property').forEach(e => e.style.display = 'block');
 			break;
 		case 3:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'objeto';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames')[3];
 			document.querySelectorAll('.object-property').forEach(e => e.style.display = 'block');
 			break;
 		case 4:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'propset';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames')[4];
 			break;
 		case 5:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'coleta';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames')[5];
 			break;
 		default:
-			document.querySelector('#properties-menu-entity-type').innerHTML = 'entidade';
+			document.querySelector('#properties-menu-entity-type').innerHTML = smb_t('entityTypeNames').default;
 			break;
 	}
 
@@ -6282,7 +7075,7 @@ function openEntitySelect(menuId, onEntitySelect, ignoreEntity) {
 	entitySelect.innerHTML = '';
 
 	var entitySelectClose = document.createElement('button');
-	entitySelectClose.innerHTML = 'Voltar';
+	entitySelectClose.innerHTML = smb_t('back');
 	entitySelectClose.addEventListener('click', event => {
 		entitySelect.style.display = 'none';
 		menu.style.display = 'flex';
@@ -6431,20 +7224,12 @@ window.addEventListener('message', function(event) {
 					var mm = now.getMinutes().toString().padStart(2, '0');
 					ts = hh + ':' + mm;
 				}
-				btn.textContent = 'Auto-save: ON · ' + ts;
+				btn.textContent = smb_t('autosaveOnPrefix') + ts;
 			}
 			break;
 		case 'spawnFrozenState':
-			var frozenEl = document.getElementById('spawn-frozen-state');
-			if (frozenEl) {
-				if (event.data.frozen) {
-					frozenEl.textContent = '\u2744 Congelado';
-					frozenEl.style.color = '';
-				} else {
-					frozenEl.textContent = '\uD83C\uDF2C Descongelado';
-					frozenEl.style.color = '#7dffb3';
-				}
-			}
+			smbSpawnFrozen = event.data.frozen === true;
+			smb_RefreshSpawnFrozenLabel();
 			break;
 		case 'updateCustomPropsets':
 			customPropsets = JSON.parse(event.data.customPropsets || '[]');
@@ -6454,6 +7239,8 @@ window.addEventListener('message', function(event) {
 });
 
 window.addEventListener('load', function() {
+	smb_CaptureLocaleDefaults();
+
 	sendMessage('init', {}).then(resp => resp.json()).then(function(resp) {
 		if (resp.favourites) {
 			favourites = resp.favourites;
@@ -6761,11 +7548,10 @@ window.addEventListener('load', function() {
 		databaseRecentFirst = !databaseRecentFirst;
 		if (databaseRecentFirst) {
 			this.setAttribute('data-active', '');
-			this.innerHTML = 'Recent';
 		} else {
 			this.removeAttribute('data-active');
-			this.innerHTML = 'Name';
 		}
+		smb_RefreshDatabaseSortLabel();
 		renderDatabase();
 	});
 
@@ -6901,10 +7687,10 @@ window.addEventListener('load', function() {
 			var now = new Date();
 			var hh = now.getHours().toString().padStart(2, '0');
 			var mm = now.getMinutes().toString().padStart(2, '0');
-			this.textContent = 'Auto-save: ON · ' + hh + ':' + mm;
+			this.textContent = smb_t('autosaveOnPrefix') + hh + ':' + mm;
 		} else {
 			this.classList.remove('on');
-			this.textContent = 'Auto-save: OFF';
+			this.textContent = smb_t('autosaveOff');
 		}
 	});
 
@@ -6918,9 +7704,25 @@ window.addEventListener('load', function() {
 			var hh = now.getHours().toString().padStart(2, '0');
 			var mm = now.getMinutes().toString().padStart(2, '0');
 			btn.classList.add('on');
-			btn.textContent = 'Auto-save: ON · ' + hh + ':' + mm;
+			btn.textContent = smb_t('autosaveOnPrefix') + hh + ':' + mm;
 			sendMessage('setAutoSaveEnabled', { enabled: true });
 		}
+	});
+
+	document.getElementById('locale-ptbr-btn').addEventListener('click', function() {
+		sendMessage('setLocale', { locale: 'pt-BR' }).then(resp => resp.json()).then(function(resp) {
+			smb_ApplyLocale(resp.locale || 'pt-BR');
+		});
+	});
+
+	document.getElementById('locale-enus-btn').addEventListener('click', function() {
+		sendMessage('setLocale', { locale: 'en-US' }).then(resp => resp.json()).then(function(resp) {
+			smb_ApplyLocale(resp.locale || 'en-US');
+		});
+	});
+
+	sendMessage('getLocale', {}).then(resp => resp.json()).then(function(resp) {
+		smb_ApplyLocale(resp.locale || 'pt-BR');
 	});
 
 	document.getElementById('spawn-frozen-state').addEventListener('click', function() {
@@ -6942,7 +7744,7 @@ window.addEventListener('load', function() {
 		if (!name) {
 			nameField.classList.add('error');
 			nameField.value = '';
-			nameField.placeholder = 'Defina um nome antes de salvar o propset';
+			nameField.placeholder = smb_GetPropsetErrorText('custom_propset_name_required');
 			nameField.focus();
 			return;
 		}
@@ -6953,7 +7755,7 @@ window.addEventListener('load', function() {
 			if (!resp.ok) {
 				nameField.classList.add('error');
 				nameField.value = '';
-				nameField.placeholder = resp.error || 'Falha ao salvar propset';
+				nameField.placeholder = smb_GetPropsetErrorText(resp.errorCode || 'custom_propset_build_failed', resp.errorArgs);
 				nameField.focus();
 			} else {
 				nameField.classList.remove('error');

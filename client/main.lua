@@ -44,6 +44,164 @@ local SMB_RAW_KEY_F12 = 123
 local SMB_RAW_KEY_F12_WAS_DOWN = false
 local SMB_RAW_KEY_3 = 51   -- tecla 3 — spawn objeto com rotação zerada
 local SMB_RAW_KEY_3_WAS_DOWN = false
+local SMB_LOCALE_KVP_KEY = 'locale'
+local SMB_DEFAULT_LOCALE = 'pt-BR'
+local SMB_SUPPORTED_LOCALES = {
+	['pt-BR'] = true,
+	['en-US'] = true
+}
+
+local SMB_LOCALES = {
+	['pt-BR'] = {
+		prompt_group = 'Spooner',
+		prompt_spawn = 'Spawnar',
+		prompt_clone = 'Clonar',
+		prompt_clear_tasks = 'Limpar Tarefas',
+		prompt_detach = 'Soltar',
+		chat_suggestion_toggle = 'Alternar o modo spooner',
+		keymap_toggle = 'Alternar modo spooner',
+		keymap_propset_anchor = 'Adicionar marcador de chao do propset',
+		notify_clone_success = 'Clonado: {name}',
+		notify_marker_preview_required = 'F12 so funciona com algum preview ativo no spooner.',
+		notify_marker_pos_unresolved = 'Nao foi possivel resolver a posicao do marcador.',
+		notify_marker_added = 'Marcador de chao do propset adicionado.',
+		notify_marker_failed = 'Falha ao adicionar o marcador de chao do propset.',
+		notify_spawned = 'Spawnado: {name}',
+		notify_spawned_zero_rotation = 'Spawnado: {name} (rot. zerada)',
+		notify_spawn_selected = 'Spawn selecionado: {name}',
+		notify_custom_propset_selected = 'Propset custom selecionado: {name}',
+		notify_custom_propset_saved = 'Propset custom salvo: {name}',
+		notify_custom_propset_save_failed = 'Falha ao salvar propset custom: {reason}',
+		notify_custom_propset_name_required = 'Propset custom: defina um nome antes de salvar.',
+		notify_custom_propset_spawned = 'Propset custom spawnado: {name} ({count} itens)',
+		error_spooner_not_active = 'O modo spooner nao esta ativo.',
+		error_no_spawn_selected = 'Nenhum spawn esta selecionado.',
+		error_no_cursor_position = 'Nao foi possivel resolver a posicao do cursor.',
+		error_spawn_custom_propset_failed = 'Falha ao spawnar propset custom {name}.',
+		error_propset_requested = 'Propset solicitado. O spooner clona os props para o banco e pode nao manter um unico handle anexado.',
+		error_spawn_generic = 'Falha ao spawnar {name}.',
+		error_custom_propset_name_required = 'Defina um nome para o propset custom.',
+		error_custom_propset_internal = 'Erro interno ao montar o propset custom.',
+		error_custom_propset_build_failed = 'Nao foi possivel montar o propset custom.',
+		error_custom_propset_no_eligible = 'Nenhum objeto elegivel encontrado na database atual.',
+		error_custom_propset_no_eligible_with_skipped = 'Nenhum objeto elegivel encontrado na database atual. {count} item(ns) foram ignorados por dados invalidos.',
+		error_custom_propset_invalid_name_or_content = 'Nome ou conteudo invalido.',
+		error_custom_propset_invalid_or_empty = 'Propset custom vazio ou invalido.',
+	},
+	['en-US'] = {
+		prompt_group = 'Spooner',
+		prompt_spawn = 'Spawn',
+		prompt_clone = 'Clone',
+		prompt_clear_tasks = 'Clear Tasks',
+		prompt_detach = 'Detach',
+		chat_suggestion_toggle = 'Toggle spooner mode',
+		keymap_toggle = 'Toggle spooner mode',
+		keymap_propset_anchor = 'Add propset ground anchor',
+		notify_clone_success = 'Cloned: {name}',
+		notify_marker_preview_required = 'F12 only works while a spooner preview is active.',
+		notify_marker_pos_unresolved = 'Could not resolve the marker position.',
+		notify_marker_added = 'Propset ground marker added.',
+		notify_marker_failed = 'Failed to add the propset ground marker.',
+		notify_spawned = 'Spawned: {name}',
+		notify_spawned_zero_rotation = 'Spawned: {name} (zero rotation)',
+		notify_spawn_selected = 'Spawn selected: {name}',
+		notify_custom_propset_selected = 'Custom propset selected: {name}',
+		notify_custom_propset_saved = 'Custom propset saved: {name}',
+		notify_custom_propset_save_failed = 'Failed to save custom propset: {reason}',
+		notify_custom_propset_name_required = 'Custom propset: define a name before saving.',
+		notify_custom_propset_spawned = 'Custom propset spawned: {name} ({count} items)',
+		error_spooner_not_active = 'Spooner mode is not active.',
+		error_no_spawn_selected = 'No spawn is selected.',
+		error_no_cursor_position = 'Could not resolve cursor position.',
+		error_spawn_custom_propset_failed = 'Failed to spawn custom propset {name}.',
+		error_propset_requested = 'Propset requested. Spooner clones the props into the database and may not keep a single attached handle.',
+		error_spawn_generic = 'Failed to spawn {name}.',
+		error_custom_propset_name_required = 'Define a name for the custom propset.',
+		error_custom_propset_internal = 'Internal error while building the custom propset.',
+		error_custom_propset_build_failed = 'Could not build the custom propset.',
+		error_custom_propset_no_eligible = 'No eligible objects were found in the current database.',
+		error_custom_propset_no_eligible_with_skipped = 'No eligible objects were found in the current database. {count} item(s) were ignored because of invalid data.',
+		error_custom_propset_invalid_name_or_content = 'Invalid name or content.',
+		error_custom_propset_invalid_or_empty = 'Empty or invalid custom propset.',
+	},
+}
+
+local SMB_CurrentLocale = SMB_DEFAULT_LOCALE
+
+local function smb_SanitizeLocale(locale)
+	if type(locale) ~= 'string' then
+		return SMB_DEFAULT_LOCALE
+	end
+
+	local normalized = locale:gsub('_', '-')
+	if SMB_SUPPORTED_LOCALES[normalized] then
+		return normalized
+	end
+
+	local lower = string.lower(normalized)
+	if lower == 'pt' or lower == 'pt-br' or lower == 'ptbr' then
+		return 'pt-BR'
+	end
+	if lower == 'en' or lower == 'en-us' or lower == 'enus' then
+		return 'en-US'
+	end
+
+	return SMB_DEFAULT_LOCALE
+end
+
+local function smb_t(key, vars)
+	local active = SMB_LOCALES[SMB_CurrentLocale] or SMB_LOCALES[SMB_DEFAULT_LOCALE]
+	local fallback = SMB_LOCALES[SMB_DEFAULT_LOCALE]
+	local text = (active and active[key]) or fallback[key] or tostring(key)
+
+	if vars then
+		for varKey, varValue in pairs(vars) do
+			text = text:gsub('{' .. tostring(varKey) .. '}', tostring(varValue))
+		end
+	end
+
+	return text
+end
+
+local function smb_ApplyPromptLocale()
+	if SpoonerPrompts then
+		SpoonerPrompts:setText(smb_t('prompt_group'))
+	end
+	if SpawnPrompt then
+		SpawnPrompt:setText(smb_t('prompt_spawn'))
+	end
+	if ClonePrompt then
+		ClonePrompt:setText(smb_t('prompt_clone'))
+	end
+	if ClearTasksPrompt then
+		ClearTasksPrompt:setText(smb_t('prompt_clear_tasks'))
+	end
+	if DetachPrompt then
+		DetachPrompt:setText(smb_t('prompt_detach'))
+	end
+end
+
+local function smb_SetLocale(locale)
+	SMB_CurrentLocale = smb_SanitizeLocale(locale)
+	SetResourceKvp(SMB_LOCALE_KVP_KEY, SMB_CurrentLocale)
+	smb_ApplyPromptLocale()
+	TriggerEvent('chat:addSuggestion', '/spooner', smb_t('chat_suggestion_toggle'), {})
+	return SMB_CurrentLocale
+end
+
+local function smb_LoadLocale()
+	SMB_CurrentLocale = smb_SanitizeLocale(GetResourceKvpString(SMB_LOCALE_KVP_KEY))
+end
+
+smb_LoadLocale()
+
+local function smb_GetTimestampValue()
+	if os and os.date then
+		return os.date(SMB_CUSTOM_PROPSET_TIME_FORMAT)
+	end
+
+	return tostring(GetGameTimer())
+end
 
 local SMB_DIRECT_ALIASES = {
 	["smb_aur_wikup_a_blankets"] = "smb_aur_hut_a_blankets",
@@ -342,7 +500,7 @@ end
 
 local function smb_InsertCustomPropsetGroundMarkerAtPreview()
 	if not Cam or not PreviewActive or not CurrentSpawn then
-		SpoonerNotify('F12 so funciona com algum preview ativo no spooner.')
+		SpoonerNotify(smb_t('notify_marker_preview_required'))
 		return
 	end
 
@@ -357,7 +515,7 @@ local function smb_InsertCustomPropsetGroundMarkerAtPreview()
 	end
 
 	if not spawnPos then
-		SpoonerNotify('Nao foi possivel resolver a posicao do marcador.')
+		SpoonerNotify(smb_t('notify_marker_pos_unresolved'))
 		return
 	end
 
@@ -386,9 +544,9 @@ local function smb_InsertCustomPropsetGroundMarkerAtPreview()
 	)
 
 	if marker then
-		SpoonerNotify('Marcador de chao do propset adicionado.')
+		SpoonerNotify(smb_t('notify_marker_added'))
 	else
-		SpoonerNotify('Falha ao adicionar o marcador de chao do propset.')
+		SpoonerNotify(smb_t('notify_marker_failed'))
 	end
 end
 
@@ -474,7 +632,7 @@ local function smb_NormalizeCustomPropsetEntry(entry)
 		name = name,
 		file = file,
 		itemCount = tonumber(entry.itemCount) or entry.itemCount,
-		updatedAt = type(entry.updatedAt) == 'string' and entry.updatedAt or os.date(SMB_CUSTOM_PROPSET_TIME_FORMAT)
+		updatedAt = type(entry.updatedAt) == 'string' and entry.updatedAt or smb_GetTimestampValue()
 	}
 end
 
@@ -683,10 +841,15 @@ local function BuildCustomPropsetFromCurrentDatabase(displayName)
 
 	if #rawItems == 0 then
 		if skippedItems > 0 then
-			return nil, ('Nenhum objeto elegivel encontrado na database atual. %s item(ns) foram ignorados por dados invalidos.'):format(skippedItems)
+			return nil, {
+				code = 'custom_propset_no_eligible_with_skipped',
+				args = { count = skippedItems }
+			}
 		end
 
-		return nil, 'Nenhum objeto elegivel encontrado na database atual.'
+		return nil, {
+			code = 'custom_propset_no_eligible'
+		}
 	end
 
 	table.sort(rawItems, function(a, b)
@@ -1152,30 +1315,34 @@ end
 if Config.isRDR then
 	SpoonerPrompts = UipromptGroup:new("Spooner", false)
 
-	SpawnPrompt = Uiprompt:new(Config.SpawnControl, "Spawnar", SpoonerPrompts, false)
+	SpawnPrompt = Uiprompt:new(Config.SpawnControl, smb_t('prompt_spawn'), SpoonerPrompts, false)
 	-- detecção real de tecla via IsDisabledControlJustPressed no CheckSpawnControls()
 
-	ClonePrompt = Uiprompt:new(Config.CloneControl, "Clonar", SpoonerPrompts, false)
+	ClonePrompt = Uiprompt:new(Config.CloneControl, smb_t('prompt_clone'), SpoonerPrompts, false)
 	ClonePrompt:setOnControlJustPressed(function()
 		if CurrentViewedEntity and CanModifyEntity(CurrentViewedEntity) then
 			AttachedEntity = CloneEntity(CurrentViewedEntity)
 			if AttachedEntity then
-				SpoonerNotify(('Clonado: %s'):format(GetModelName(GetSpoonerEntityModel(CurrentViewedEntity))))
+				SpoonerNotify(smb_t('notify_clone_success', {
+					name = GetModelName(GetSpoonerEntityModel(CurrentViewedEntity))
+				}))
 			end
 		end
 	end)
 
-	ClearTasksPrompt = Uiprompt:new(`INPUT_INTERACT_NEG`, "Limpar Tarefas", SpoonerPrompts)
+	ClearTasksPrompt = Uiprompt:new(`INPUT_INTERACT_NEG`, smb_t('prompt_clear_tasks'), SpoonerPrompts)
 	ClearTasksPrompt:setHoldMode(true)
 	ClearTasksPrompt:setOnHoldModeJustCompleted(function()
 	       TryClearTasks(PlayerPedId())
 	end)
 
-	DetachPrompt = Uiprompt:new(`INPUT_INTERACT_LEAD_ANIMAL`, "Soltar", SpoonerPrompts)
+	DetachPrompt = Uiprompt:new(`INPUT_INTERACT_LEAD_ANIMAL`, smb_t('prompt_detach'), SpoonerPrompts)
 	DetachPrompt:setHoldMode(true)
 	DetachPrompt:setOnHoldModeJustCompleted(function()
 	       TryDetach(PlayerPedId())
 	end)
+
+	smb_ApplyPromptLocale()
 end
 
 local StoreDeleted = false
@@ -1499,7 +1666,7 @@ RegisterCommand('spooner_spawn', function(source, args, raw)
 	end
 
 	if entity then
-		SpoonerNotify(('Spawnado: %s'):format(CurrentSpawn.modelName))
+		SpoonerNotify(smb_t('notify_spawned', { name = CurrentSpawn.modelName }))
 	end
 end, false)
 
@@ -1516,8 +1683,8 @@ RegisterCommand('spooner_propset_anchor', function(source, args, raw)
 end, false)
 
 if RegisterKeyMapping then
-	RegisterKeyMapping('spooner', 'Alternar modo spooner', 'keyboard', 'F11')
-	RegisterKeyMapping('spooner_propset_anchor', 'Adicionar marcador de chao do propset', 'keyboard', 'F12')
+	RegisterKeyMapping('spooner', smb_t('keymap_toggle'), 'keyboard', 'F11')
+	RegisterKeyMapping('spooner_propset_anchor', smb_t('keymap_propset_anchor'), 'keyboard', 'F12')
 end
 
 AddEventHandler('spooner:toggle', ToggleSpoonerMode)
@@ -1556,9 +1723,17 @@ end)
 RegisterNetEvent('spooner:customPropsetSaveResult')
 AddEventHandler('spooner:customPropsetSaveResult', function(ok, message)
 	if ok then
-		SpoonerNotify(('Propset custom salvo: %s'):format(tostring(message)))
+		SpoonerNotify(smb_t('notify_custom_propset_saved', {
+			name = tostring(message)
+		}))
 	else
-		SpoonerNotify(('Falha ao salvar propset custom: %s'):format(tostring(message)))
+		local reasonKey = 'error_custom_propset_' .. tostring(message)
+		local reason = (SMB_LOCALES[SMB_CurrentLocale] and SMB_LOCALES[SMB_CurrentLocale][reasonKey])
+			or (SMB_LOCALES[SMB_DEFAULT_LOCALE] and SMB_LOCALES[SMB_DEFAULT_LOCALE][reasonKey])
+			or tostring(message)
+		SpoonerNotify(smb_t('notify_custom_propset_save_failed', {
+			reason = reason
+		}))
 	end
 end)
 
@@ -2336,17 +2511,17 @@ function SpawnCurrentSelectionAtCursor(options)
 	options = options or {}
 
 	if not Cam then
-		return nil, 'Spooner mode is not active.'
+		return nil, smb_t('error_spooner_not_active')
 	end
 
 	if not CurrentSpawn then
-		return nil, 'No spawn is selected.'
+		return nil, smb_t('error_no_spawn_selected')
 	end
 
 	local cursorSpawnPos, yaw = GetSpawnCursorPosition()
 	local spawnPos = smb_GetActivePreviewSpawnPosition() or cursorSpawnPos
 	if not spawnPos then
-		return nil, 'Could not resolve cursor position.'
+		return nil, smb_t('error_no_cursor_position')
 	end
 
 	local spawnSpec = GetSpawnSpec(CurrentSpawn.modelName)
@@ -2404,7 +2579,7 @@ function SpawnCurrentSelectionAtCursor(options)
 		if entity then
 			return entity, nil
 		end
-		return nil, ('Falha ao spawnar propset custom %s.'):format(CurrentSpawn.modelName)
+		return nil, smb_t('error_spawn_custom_propset_failed', { name = CurrentSpawn.modelName })
 	end
 
 	if entity and not IsVirtualDatabaseEntity(entity) then
@@ -2415,10 +2590,10 @@ function SpawnCurrentSelectionAtCursor(options)
 	end
 
 	if CurrentSpawn.type == 4 then
-		return nil, 'Propset solicitado. O spooner clona os props para o banco e pode nao manter um unico handle anexado.'
+		return nil, smb_t('error_propset_requested')
 	end
 
-	return nil, ('Falha ao spawnar %s.'):format(CurrentSpawn.modelName)
+	return nil, smb_t('error_spawn_generic', { name = CurrentSpawn.modelName })
 end
 
 RegisterNUICallback('closePedMenu', function(data, cb)
@@ -2432,7 +2607,7 @@ RegisterNUICallback('closePedMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2449,7 +2624,7 @@ RegisterNUICallback('closeVehicleMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2467,7 +2642,7 @@ RegisterNUICallback('closeObjectMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2484,7 +2659,7 @@ RegisterNUICallback('closePropsetMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2499,7 +2674,7 @@ RegisterNUICallback('closePickupMenu', function(data, cb)
 			previewIndex = tonumber(data.index) or 1,
 			previewMenu = tonumber(data.menu) or 4
 		}
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2522,7 +2697,7 @@ RegisterNUICallback('closePersonalMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Spawn selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_spawn_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -2539,7 +2714,7 @@ RegisterNUICallback('closePersonalCustomPropsetMenu', function(data, cb)
 		}
 		PreviewModelName = nil
 		PreviewActive = true
-		SpoonerNotify(('Propset custom selecionado: %s'):format(data.modelName))
+		SpoonerNotify(smb_t('notify_custom_propset_selected', { name = data.modelName }))
 	end
 	SetNuiFocus(false, false)
 	cb({})
@@ -3126,30 +3301,37 @@ end)
 RegisterNUICallback('saveCustomPropset', function(data, cb)
 	local displayName = tostring(data.name or ''):gsub('^%s+', ''):gsub('%s+$', '')
 	if displayName == '' then
-		SpoonerNotify('Propset custom: defina um nome antes de salvar.')
+		SpoonerNotify(smb_t('notify_custom_propset_name_required'))
 		cb({
 			ok = false,
-			error = 'Defina um nome para o propset custom.'
+			errorCode = 'custom_propset_name_required'
 		})
 		return
 	end
 
 	local buildOk, preset, err = pcall(BuildCustomPropsetFromCurrentDatabase, displayName)
 	if not buildOk then
-		local message = 'Erro interno ao montar o propset custom.'
+		local message = smb_t('error_custom_propset_internal')
 		SpoonerNotify(message)
 		cb({
 			ok = false,
-			error = message
+			errorCode = 'custom_propset_internal'
 		})
 		return
 	end
 
 	if not preset then
-		SpoonerNotify(tostring(err or 'Propset custom: nenhum objeto elegivel encontrado.'))
+		local errCode = 'custom_propset_build_failed'
+		local errArgs = nil
+		if type(err) == 'table' and err.code then
+			errCode = err.code
+			errArgs = err.args
+		end
+		SpoonerNotify(smb_t('error_' .. errCode, errArgs))
 		cb({
 			ok = false,
-			error = err or 'Nao foi possivel montar o propset custom.'
+			errorCode = errCode,
+			errorArgs = errArgs
 		})
 		return
 	end
@@ -3160,7 +3342,7 @@ RegisterNUICallback('saveCustomPropset', function(data, cb)
 		name = displayName,
 		file = smb_SanitizeCustomPropsetName(displayName) .. '.json',
 		itemCount = #preset.items,
-		updatedAt = os.date(SMB_CUSTOM_PROPSET_TIME_FORMAT)
+		updatedAt = smb_GetTimestampValue()
 	}, preset)
 
 	if localUpsertOk and savedEntry ~= nil then
@@ -3636,6 +3818,20 @@ RegisterNUICallback('getAutoSavePath', function(data, cb)
 	local path = GetResourceKvpString('autosave_path') or ''
 	local enabled = GetResourceKvpString('autosave_enabled') == '1'
 	cb(json.encode({ path = path, enabled = enabled }))
+end)
+
+RegisterNUICallback('getLocale', function(data, cb)
+	cb(json.encode({
+		locale = SMB_CurrentLocale,
+		supported = { 'pt-BR', 'en-US' }
+	}))
+end)
+
+RegisterNUICallback('setLocale', function(data, cb)
+	local locale = smb_SetLocale(data.locale)
+	cb(json.encode({
+		locale = locale
+	}))
 end)
 
 RegisterNUICallback('importDb', function(data, cb)
@@ -4611,9 +4807,12 @@ function MainSpoonerUpdates()
 					FreezeEntityPosition(entity, false)
 				end
 				if CurrentSpawn.type == 6 then
-					SpoonerNotify(('Propset custom spawnado: %s (%s itens)'):format(CurrentSpawn.modelName, tostring(entity)))
+					SpoonerNotify(smb_t('notify_custom_propset_spawned', {
+						name = CurrentSpawn.modelName,
+						count = tostring(entity)
+					}))
 				else
-					SpoonerNotify(('Spawnado: %s'):format(CurrentSpawn.modelName))
+					SpoonerNotify(smb_t('notify_spawned', { name = CurrentSpawn.modelName }))
 				end
 			end
 		end
@@ -4664,9 +4863,12 @@ function MainSpoonerUpdates()
 						end
 					end
 					if CurrentSpawn.type == 6 then
-						SpoonerNotify(('Propset custom spawnado: %s (%s itens)'):format(CurrentSpawn.modelName, tostring(entity)))
+						SpoonerNotify(smb_t('notify_custom_propset_spawned', {
+							name = CurrentSpawn.modelName,
+							count = tostring(entity)
+						}))
 					else
-						SpoonerNotify(('Spawnado: %s (rot. zerada)'):format(CurrentSpawn.modelName))
+						SpoonerNotify(smb_t('notify_spawned_zero_rotation', { name = CurrentSpawn.modelName }))
 					end
 				end
 			end
@@ -5079,7 +5281,7 @@ local function drawEntityHandles()
 end
 
 CreateThread(function()
-	TriggerEvent('chat:addSuggestion', '/spooner', 'Alternar o modo spooner', {})
+	TriggerEvent('chat:addSuggestion', '/spooner', smb_t('chat_suggestion_toggle'), {})
 
 	TriggerServerEvent('spooner:init')
 

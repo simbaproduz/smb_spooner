@@ -28,6 +28,7 @@ Creditos:
 - Custom propsets com preview e spawn ancorado no mundo
 - Menus pessoais `personalOyate`, `personalPeds`, `personalObjetos`, `personalPlantas`
 - Save/load de database local e autosave integrado
+- Troca de idioma em runtime (`pt-BR` / `en-US`) com persistencia local por cliente
 - Hotkeys/commands adaptados ao runtime RedM do projeto
 - Tecla `3` para spawnar objeto com rotacao zerada nos tres eixos
 
@@ -84,6 +85,12 @@ Autosave:
 - intervalo atual do autosave integrado: `3 minutos`
 - o path do autosave e definido pela UI do spooner e persistido em KVP local
 
+Idioma:
+
+- seletor `PTBR | EN US` no menu `J`
+- a escolha fica salva em KVP local do resource
+- prompts, notifies, HUD e NUI acompanham o ultimo idioma escolhido
+
 ## Comandos
 
 - `/spooner` - abre/fecha o spooner
@@ -118,6 +125,7 @@ Autosave:
 | `X` | abrir database |
 | `Tab` | abrir propriedades |
 | `J` | abrir save/load |
+| `PTBR / EN US` | alternar idioma da NUI/runtime no menu `J` |
 | `H` | abrir ajuda |
 | `1` | mostrar/ocultar painel de controles |
 | `2` | toggle frozen do proximo spawn |
@@ -135,6 +143,7 @@ Autosave:
 - `filewriter.js` integrado; nao depende mais de `smb_filewriter`
 - suporte a custom propsets persistidos na propria resource
 - autosave integrado com path persistido em KVP local
+- locale switcher `pt-BR` / `en-US` com persistencia da escolha do cliente
 - menus pessoais SMB: `personalPlantas`, `personalObjetos`, `personalOyate`, `personalPeds`, `personalPropsets`
 - otimizacoes de performance na NUI: lazy load, caches de listas, debounce, cleanup de DOM, `contain: content`
 - `SMB_ModelHashLookup` para `GetModelName()` O(1)

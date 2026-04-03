@@ -623,3 +623,21 @@ textarea {
 	border-color: #0f0;
 	color: #0f0;
 }
+
+#locale-switcher {
+	display: flex;
+	justify-content: center;
+	gap: 0.5vw;
+	padding: 0.5vh 0;
+	margin-bottom: 0.5vh;
+}
+
+.locale-btn {
+	min-width: 5.5vw;
+}
+
+.locale-btn.active {
+	background-color: rgba(255, 255, 255, 0.85);
+	color: black;
+	border-color: white;
+}

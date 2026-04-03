@@ -283,14 +283,14 @@ AddEventHandler('spooner:saveCustomPropset', function(displayName, content)
 
 	if name == '' or not content or content == '' then
 		print(('[spooner] saveCustomPropset rejeitado: nome/conteudo invalido (source=%s)'):format(tostring(src)))
-		TriggerClientEvent('spooner:customPropsetSaveResult', src, false, 'Nome ou conteudo invalido.')
+		TriggerClientEvent('spooner:customPropsetSaveResult', src, false, 'invalid_name_or_content')
 		return
 	end
 
 	local ok, decoded = pcall(json.decode, content)
 	if not ok or type(decoded) ~= 'table' or type(decoded.items) ~= 'table' or #decoded.items == 0 then
 		print(('[spooner] saveCustomPropset rejeitado: propset vazio/invalido "%s" (source=%s)'):format(name, tostring(src)))
-		TriggerClientEvent('spooner:customPropsetSaveResult', src, false, 'Propset custom vazio ou invalido.')
+		TriggerClientEvent('spooner:customPropsetSaveResult', src, false, 'invalid_or_empty')
 		return
 	end
 
