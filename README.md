@@ -6,7 +6,7 @@ Portuguese (BR): see [README.pt-BR.md](README.pt-BR.md)
 
 I am a worldbuilding and runtime tooling enthusiast with a creative, methodical workflow. `smb_spooner` comes from that perspective: a Spooner fork shaped to fit my own needs for scene composition, operational predictability, and fast iteration.
 
-This resource builds on [kibook/spooner](https://github.com/kibook/spooner) and evolves that base with performance patches, local persistence, personal menus, and SMB-focused worldbuilding flow.
+This resource builds on [kibook/spooner](https://github.com/kibook/spooner) and evolves that base with performance patches, local persistence, personal menus.
 
 ## Fork Lineage and Credits
 
@@ -185,10 +185,3 @@ Language:
 
 - `custom_propsets/index.json` and `custom_propsets/presets/*.json` are generated at runtime
 - for publication, the repository should keep the structure empty and ignore the author's local preset files
-
-## Exceptions to SMB Conventions
-
-- The folder/resource name was renamed to `smb_spooner`.
-- The legacy public namespace `spooner:*` was kept for compatibility with the current fork and existing internal contracts.
-- New SMB helpers follow `smb_` / `SMB_`.
-- Private NUI helpers added during optimization (`_getEls`, `_setText`) keep a local underscore prefix because they are internal to the file and not part of the public interface.
